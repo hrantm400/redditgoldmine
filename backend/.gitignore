@@ -1,0 +1,36 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Firebase Service Account (секретные ключи)
+firebaseServiceAccount.json
+firebaseServiceAccount.json.json
+*.json.json
+*-service-account.json
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Data files (опционально - раскомментируйте если не хотите коммитить данные)
+# data/*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+

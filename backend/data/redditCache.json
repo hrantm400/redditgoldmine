@@ -1,0 +1,192 @@
+{
+  "/hrantm400": {
+    "data": {
+      "username": "hrantm400",
+      "totalKarma": 0,
+      "postKarma": 0,
+      "commentKarma": 0,
+      "accountAge": 0,
+      "accountAgeFormatted": "0 лет, 0 месяцев",
+      "karmaPerDay": 0,
+      "commentKarmaRatio": 0,
+      "postKarmaRatio": 0,
+      "isGold": false,
+      "isVerified": false,
+      "hasVerifiedEmail": false,
+      "coolnessScore": 0,
+      "level": "Начинающий",
+      "levelEmoji": "🌿",
+      "levelColor": "#AA96DA",
+      "recommendations": [
+        {
+          "type": "info",
+          "title": "Новый аккаунт",
+          "message": "Ваш аккаунт совсем новый! Продолжайте быть активным, и ваша карма будет расти.",
+          "action": "Публикуйте качественный контент регулярно"
+        },
+        {
+          "type": "info",
+          "title": "Подтвердите email",
+          "message": "Подтверждение email повышает доверие к аккаунту",
+          "action": "Подтвердите email в настройках Reddit"
+        }
+      ],
+      "strengths": [],
+      "avatar": null,
+      "cached": false
+    },
+    "expiresAt": 1763644236495,
+    "cachedAt": "2025-11-19T13:10:36.495Z"
+  },
+  "/hrantai": {
+    "data": {
+      "username": "HrantAi",
+      "totalKarma": 7,
+      "postKarma": 7,
+      "commentKarma": 0,
+      "accountAge": 26,
+      "accountAgeFormatted": "0 лет, 0 месяцев",
+      "karmaPerDay": 0.3,
+      "commentKarmaRatio": 0,
+      "postKarmaRatio": 100,
+      "isGold": false,
+      "isVerified": true,
+      "hasVerifiedEmail": true,
+      "coolnessScore": 7,
+      "level": "Начинающий",
+      "levelEmoji": "🌿",
+      "levelColor": "#AA96DA",
+      "recommendations": [
+        {
+          "type": "info",
+          "title": "Новый аккаунт",
+          "message": "Ваш аккаунт совсем новый! Продолжайте быть активным, и ваша карма будет расти.",
+          "action": "Публикуйте качественный контент регулярно"
+        }
+      ],
+      "strengths": [
+        "Сильный создатель контента"
+      ],
+      "avatar": "https://styles.redditmedia.com/t5_fqcm2d/styles/profileIcon_mqtlkr0gwzwf1.jpg?width=256&amp;height=256&amp;crop=256:256,smart&amp;s=97f0c750d4cde60f7b8b2ee389316de59e20f49a",
+      "cached": false
+    },
+    "expiresAt": 1763644249392,
+    "cachedAt": "2025-11-19T13:10:49.392Z"
+  },
+  "hrantai": {
+    "data": {
+      "username": "HrantAi",
+      "totalKarma": 7,
+      "postKarma": 7,
+      "commentKarma": 0,
+      "accountAge": 26,
+      "accountAgeFormatted": "0 years, 0 months",
+      "karmaPerDay": 0.3,
+      "commentKarmaRatio": 0,
+      "postKarmaRatio": 100,
+      "isGold": false,
+      "isVerified": true,
+      "hasVerifiedEmail": true,
+      "coolnessScore": 7,
+      "level": "Newbie",
+      "levelEmoji": "🌿",
+      "levelColor": "#AA96DA",
+      "recommendations": [
+        {
+          "type": "info",
+          "title": "New Account",
+          "message": "Your account is brand new! Keep being active and your karma will grow.",
+          "action": "Post quality content regularly"
+        },
+        {
+          "type": "warning",
+          "title": "Posting Time Optimization",
+          "message": "Consider posting during peak hours (9-11 AM, 1-3 PM, 7-9 PM in your timezone) for better engagement.",
+          "action": "Try posting at 21:00 for better engagement"
+        }
+      ],
+      "strengths": [
+        "Strong Content Creator"
+      ],
+      "avatar": "https://styles.redditmedia.com/t5_fqcm2d/styles/profileIcon_mqtlkr0gwzwf1.jpg?width=256&amp;height=256&amp;crop=256:256,smart&amp;s=97f0c750d4cde60f7b8b2ee389316de59e20f49a",
+      "postingTimeAnalysis": {
+        "totalPosts": 3,
+        "mostActiveHours": [
+          {
+            "hour": 1,
+            "hourFormatted": "1:00",
+            "count": 1,
+            "percentage": "33.3"
+          },
+          {
+            "hour": 16,
+            "hourFormatted": "16:00",
+            "count": 1,
+            "percentage": "33.3"
+          },
+          {
+            "hour": 21,
+            "hourFormatted": "21:00",
+            "count": 1,
+            "percentage": "33.3"
+          }
+        ],
+        "optimalTimeRatio": 0,
+        "isPostingAtOptimalTime": false,
+        "bestPostingHours": [
+          {
+            "hour": 21,
+            "hourFormatted": "21:00",
+            "avgScore": 4,
+            "count": 1
+          },
+          {
+            "hour": 1,
+            "hourFormatted": "1:00",
+            "avgScore": 1,
+            "count": 1
+          },
+          {
+            "hour": 16,
+            "hourFormatted": "16:00",
+            "avgScore": 0,
+            "count": 1
+          }
+        ],
+        "recommendation": "Consider posting during peak hours (9-11 AM, 1-3 PM, 7-9 PM in your timezone) for better engagement."
+      },
+      "topPosts": [
+        {
+          "title": "I think I'm with the grok too often",
+          "subreddit": "grok",
+          "score": 4,
+          "numComments": 3,
+          "createdUtc": 1761397325,
+          "url": "https://reddit.com/r/grok/comments/1ofqzgx/i_think_im_with_the_grok_too_often/",
+          "thumbnail": null
+        },
+        {
+          "title": "Any news android app sora?",
+          "subreddit": "SoraAi",
+          "score": 1,
+          "numComments": 3,
+          "createdUtc": 1761670923,
+          "url": "https://reddit.com/r/SoraAi/comments/1oiezn3/any_news_android_app_sora/",
+          "thumbnail": null
+        },
+        {
+          "title": "Your kid brings home an AI as their “friend” — whats your first house rule?Real rules only, nothing sci-fi. What goes on the fridge?",
+          "subreddit": "AskReddit",
+          "score": 0,
+          "numComments": 1,
+          "createdUtc": 1761552148,
+          "url": "https://reddit.com/r/AskReddit/comments/1oh8lrn/your_kid_brings_home_an_ai_as_their_friend_whats/",
+          "thumbnail": null
+        }
+      ],
+      "cached": false
+    },
+    "expiresAt": 1763644677574,
+    "cachedAt": "2025-11-19T13:17:57.574Z"
+  }
+}

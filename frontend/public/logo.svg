@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD700" />
+      <stop offset="50%" stop-color="#FFA500" />
+      <stop offset="100%" stop-color="#FF8C00" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Base Coin -->
+  <circle cx="50" cy="50" r="45" fill="url(#goldGradient)" filter="url(#shadow)" />
+  
+  <!-- Inner Coin Ring -->
+  <circle cx="50" cy="50" r="38" fill="none" stroke="#FFF7CC" stroke-width="2" opacity="0.8" />
+  <circle cx="50" cy="50" r="34" fill="none" stroke="#CC7000" stroke-width="1.5" opacity="0.6" />
+
+  <!-- Subtle Reddit Alien Head Outline (Stylized) -->
+  <path d="M50 35 C65 35 70 45 70 55 C70 65 65 72 50 72 C35 72 30 65 30 55 C30 45 35 35 50 35 Z" fill="#FFFFFF" />
+  
+  <!-- Antenna -->
+  <path d="M50 35 L50 25 L58 25" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="58" cy="25" r="4" fill="#FFFFFF" />
+  
+  <!-- Ears -->
+  <circle cx="28" cy="50" r="6" fill="#FFFFFF" />
+  <circle cx="72" cy="50" r="6" fill="#FFFFFF" />
+
+  <!-- Eyes (Reddit Red/Orange) -->
+  <circle cx="42" cy="52" r="4" fill="#FF4500" />
+  <circle cx="58" cy="52" r="4" fill="#FF4500" />
+
+  <!-- Smile -->
+  <path d="M42 62 Q50 66 58 62" fill="none" stroke="#FF4500" stroke-width="3" stroke-linecap="round" />
+</svg>
