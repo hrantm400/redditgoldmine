@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { X, Sparkles } from "lucide-react";
 
 // You can change this link to the actual deStream checkout link
-const PROMO_LINK = "https://destream.net/t/RedditGoldMine/YOUR_PROMO_LINK_HERE"; 
+const PROMO_LINK = "https://destream.net/t/RedditGoldMine/NvYJvfgK"; 
 
 const PromoBanner = () => {
   const [isVisible, setIsVisible] = useState(true);

@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { API_URL } from "../config";
 
 const PROMO_COURSE_ID = "promo-bundle";
-const PROMO_LINK = "https://destream.net/t/RedditGoldMine/YOUR_PROMO_LINK_HERE"; // Replace when ready
+const PROMO_LINK = "https://destream.net/t/RedditGoldMine/NvYJvfgK"; // Replace when ready
 
 const PromoModal = () => {
   const [isOpen, setIsOpen] = useState(false);
