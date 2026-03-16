@@ -2648,6 +2648,75 @@ app.post(
   }
 );
 
+// Admin: Get analytics stats
+app.get("/api/admin/stats", verifyFirebaseToken, async (req, res) => {
+  try {
+    const adminEmail = req.user.email;
+    if (!(await isAdminEmail(adminEmail))) {
+      return sendError(res, 403, "Only admin can view stats");
+    }
+
+    const { pool } = require("./storage");
+
+    // Users count from PostgreSQL
+    let totalUsers = 0;
+    let recentSignups = 0;
+    try {
+      const usersRes = await pool.query("SELECT created_at FROM users");
+      totalUsers = usersRes.rows.length;
+      
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      recentSignups = usersRes.rows.filter(u => new Date(u.created_at) >= sevenDaysAgo).length;
+    } catch (e) {
+      console.error("Error counting users from PG:", e);
+    }
+
+    // Courses count
+    const totalCourses = courseStorage.length;
+
+    // Total access grants
+    let totalAccessGrants = 0;
+    for (const [, courses] of userCourseAccess) {
+      totalAccessGrants += courses.size;
+    }
+
+    // Users with course access
+    const usersWithAccess = userCourseAccess.size;
+
+    // Pending payment requests from PostgreSQL
+    let pendingRequests = 0;
+    try {
+      const notifRes = await pool.query(
+        "SELECT COUNT(*) FROM forum_notifications WHERE type = $1 AND is_read = false",
+        ["payment_request"]
+      );
+      pendingRequests = parseInt(notifRes.rows[0].count, 10);
+    } catch (e) {
+      // Table might not exist yet if no requests made
+      if (e.code === '42P01') { 
+        pendingRequests = 0;
+      } else {
+        console.error("Error counting pending requests from PG:", e);
+      }
+    }
+
+    res.json({
+      success: true,
+      stats: {
+        totalUsers,
+        totalCourses,
+        totalAccessGrants,
+        usersWithAccess,
+        recentSignups,
+        pendingRequests,
+      }
+    });
+  } catch (error) {
+    console.error("Error getting stats:", error);
+    sendError(res, 500, "Failed to get stats");
+  }
+});
+
 // Admin: Get payment access requests
 app.get("/api/admin/payment-requests", verifyFirebaseToken, async (req, res) => {
   try {
@@ -2656,27 +2725,31 @@ app.get("/api/admin/payment-requests", verifyFirebaseToken, async (req, res) => 
       return sendError(res, 403, "Only admin can view payment requests");
     }
 
-    // Query forum_notifications for payment_request type
-    const snapshot = await admin.firestore()
-      .collection("forum_notifications")
-      .where("type", "==", "payment_request")
-      .get();
-
-    let requests = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate?.() || doc.data().createdAt,
-    }));
+    const { pool } = require("./storage");
     
-    // Sort in memory to avoid Firestore composite index requirement
-    requests.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-    
-    // Limit to 100
-    requests = requests.slice(0, 100);
+    // First Ensure the notifications table exists (creating it just in case since they recently migrated)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS forum_notifications (
+        id SERIAL PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL,
+        type VARCHAR(50) NOT NULL,
+        title VARCHAR(255),
+        message TEXT,
+        link VARCHAR(255),
+        is_read BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-    res.json({ success: true, requests });
+    // Query PostgreSQL for payment_request type
+    const result = await pool.query(
+      "SELECT id, user_id as \"userId\", type, title, message, link, is_read as read, created_at as \"createdAt\" FROM forum_notifications WHERE type = $1 ORDER BY created_at DESC LIMIT 100",
+      ["payment_request"]
+    );
+
+    res.json({ success: true, requests: result.rows });
   } catch (error) {
-    console.error("Error getting payment requests:", error);
+    console.error("Error getting payment requests from PG:", error);
     sendError(res, 500, "Failed to get payment requests");
   }
 });
