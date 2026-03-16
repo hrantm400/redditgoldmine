@@ -7,6 +7,7 @@ import { CheckCircle, Clock, Lightbulb } from "lucide-react";
 import NeoPage from "../components/NeoPage";
 import NeoFooter from "../components/NeoFooter";
 import SiteHeader from "../components/SiteHeader";
+import SnooMascot from "../components/SnooMascot";
 import { useAuth } from "../context/AuthContext";
 
 const HomePage = () => {
@@ -137,6 +138,12 @@ const HomePage = () => {
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-neo-black mb-8 g-fade-in px-4">
                   Grow Karma & Drive Traffic Fast
                 </h2>
+                
+                {/* Interactive Mascot container */}
+                <div className="relative w-48 h-48 mx-auto -mt-6 mb-4 z-10 g-fade-in hidden md:block">
+                  <SnooMascot />
+                </div>
+
                 <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-gray-700 mb-10 g-fade-in px-4">
                   Learn the secrets to Reddit success with proven strategies for gaining karma, creating viral posts, and dominating niche communities. Transform your Reddit presence and take advantage of one of the most powerful platforms for personal and business growth.
                 </p>
