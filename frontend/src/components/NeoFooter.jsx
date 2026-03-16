@@ -8,7 +8,7 @@ const NeoFooter = () => (
         &copy; <span id="current-year">{new Date().getFullYear()}</span> RedditGoldmine. All rights reserved.
       </p>
       <a
-        href="https://t.me/+HnB3dnm_6rc1YzIy"
+        href="https://t.me/+pM1AwiZDA9k3NDI6"
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-center gap-3 bg-neo-main text-white border-4 border-neo-black px-6 py-3 font-bold text-lg hover:bg-neo-accent hover:text-neo-black transition-colors shadow-neo"
