@@ -159,6 +159,30 @@ const AdminPage = () => {
     }
   };
 
+  const handleRejectRequest = async (requestId) => {
+    if (!window.confirm("Are you sure you want to reject and dismiss this request?")) return;
+    
+    try {
+      const token = await getIdToken();
+      if (!token) return;
+      const res = await fetch(`${API_URL}/api/admin/payment-requests/${requestId}/reject`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        // Remove from list
+        setPaymentRequests(prev => prev.filter(req => req.id !== requestId));
+        // Refresh stats to update counter
+        loadStats();
+      } else {
+        alert("Failed to reject request");
+      }
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      alert("Error occurred while rejecting request");
+    }
+  };
+
   useEffect(() => {
     if (!isAdmin) {
       console.log("Not admin, skipping data load");
@@ -979,6 +1003,12 @@ const AdminPage = () => {
                             </p>
                           </div>
                           <div className="flex-shrink-0 flex gap-2">
+                            <button
+                              className="btn-neo py-2 px-4 text-sm bg-red-600 text-white hover:bg-red-700 hover:text-white"
+                              onClick={() => handleRejectRequest(req.id)}
+                            >
+                              Reject
+                            </button>
                             <button
                               className="btn-neo-main py-2 px-4 text-sm"
                               onClick={() => {

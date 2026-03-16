@@ -2754,6 +2754,34 @@ app.get("/api/admin/payment-requests", verifyFirebaseToken, async (req, res) => 
   }
 });
 
+// Admin: Reject payment access request
+app.put("/api/admin/payment-requests/:id/reject", verifyFirebaseToken, async (req, res) => {
+  try {
+    const adminEmail = req.user.email;
+    if (!(await isAdminEmail(adminEmail))) {
+      return sendError(res, 403, "Only admin can reject payment requests");
+    }
+
+    const requestId = req.params.id;
+    const { pool } = require("./storage");
+    
+    // Mark as rejected/read in PostgreSQL
+    const result = await pool.query(
+      "UPDATE forum_notifications SET type = $1, is_read = $2 WHERE id = $3 RETURNING id",
+      ["rejected_payment", true, requestId]
+    );
+
+    if (result.rowCount === 0) {
+      return sendError(res, 404, "Payment request not found");
+    }
+
+    res.json({ success: true, message: "Payment request rejected" });
+  } catch (error) {
+    console.error("Error rejecting payment request in PG:", error);
+    sendError(res, 500, "Failed to reject payment request");
+  }
+});
+
 
 app.use((req, res, next) => {
   console.log("Unmatched request:", req.method, req.path);
