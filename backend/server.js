@@ -2580,23 +2580,46 @@ app.post(
         at: new Date().toISOString(),
       });
 
-      // Create in-app notifications for admins (forum notification system)
+      // Create in-app notifications for admins in PostgreSQL
       try {
-        const admins = await forum.getAdmins(); // returns [{ email, ... }]
-        const notifPromises = admins.map((adminInfo) =>
-          forum.createNotification({
-            userId: adminInfo.email, // use admin email as userId key in notifications
-            type: "payment_request",
-            title: "New payment access request",
-            message: `User ${userEmail} clicked "I already paid – request access" for course: ${courseId}.`,
-            link: "/admin", // where admin can manage access
-            read: false,
-          })
+        const { pool } = require("./storage");
+        
+        // Ensure table exists just in case
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS forum_notifications (
+            id SERIAL PRIMARY KEY,
+            user_id VARCHAR(255) NOT NULL,
+            type VARCHAR(50) NOT NULL,
+            title VARCHAR(255),
+            message TEXT,
+            link VARCHAR(255),
+            is_read BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          )
+        `);
+
+        // Get admins
+        const adminEmails = (process.env.ADMIN_EMAILS || "")
+          .split(",")
+          .map((e) => e.trim().toLowerCase())
+          .filter(Boolean);
+
+        const notifPromises = adminEmails.map((adminEmail) =>
+          pool.query(
+            "INSERT INTO forum_notifications (user_id, type, title, message, link, is_read) VALUES ($1, $2, $3, $4, $5, false)",
+            [
+              adminEmail,
+              "payment_request",
+              "New payment access request",
+              `User ${userEmail} clicked "I already paid – request access" for course: ${courseId}.`,
+              "/admin",
+            ]
+          )
         );
         await Promise.all(notifPromises);
-        console.log(`🔔 Created ${notifPromises.length} admin notifications for access request`);
+        console.log(`🔔 Created ${notifPromises.length} admin notifications for access request in PG`);
       } catch (notifError) {
-        console.error("Error creating admin notifications:", notifError);
+        console.error("Error creating admin notifications in PG:", notifError);
       }
 
       // Send email notification to admins if SMTP is configured
