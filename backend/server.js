@@ -1227,12 +1227,68 @@ app.delete("/api/admin/courses/:id/modules/:moduleId", verifyFirebaseToken, asyn
   }
 });
 
-app.get("/api/admin/stats", (req, res) => {
-  const token = (req.headers.authorization || "").replace("Bearer ", "");
-  if (!token || !adminTokens.has(token)) {
-    return sendError(res, 401, "No access");
+app.get("/api/admin/stats", verifyFirebaseToken, async (req, res) => {
+  try {
+    const adminEmail = req.user.email;
+    if (!(await isAdminEmail(adminEmail))) {
+      return sendError(res, 403, "Only admin can view stats");
+    }
+
+    // Users count from Firebase Auth
+    let totalUsers = 0;
+    let recentSignups = 0;
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    try {
+      const listResult = await admin.auth().listUsers(1000);
+      totalUsers = listResult.users.length;
+      recentSignups = listResult.users.filter(u => {
+        const created = new Date(u.metadata.creationTime);
+        return created >= sevenDaysAgo;
+      }).length;
+    } catch (e) {
+      console.error("Error counting users:", e);
+    }
+
+    // Courses count
+    const totalCourses = courseStorage.length;
+
+    // Total access grants
+    let totalAccessGrants = 0;
+    for (const [, courses] of userCourseAccess) {
+      totalAccessGrants += courses.size;
+    }
+
+    // Users with course access
+    const usersWithAccess = userCourseAccess.size;
+
+    // Pending payment requests
+    let pendingRequests = 0;
+    try {
+      const snapshot = await admin.firestore()
+        .collection("forum_notifications")
+        .where("type", "==", "payment_request")
+        .where("read", "==", false)
+        .get();
+      pendingRequests = snapshot.size;
+    } catch (e) {
+      console.error("Error counting pending requests:", e);
+    }
+
+    res.json({
+      success: true,
+      stats: {
+        totalUsers,
+        totalCourses,
+        totalAccessGrants,
+        usersWithAccess,
+        recentSignups,
+        pendingRequests,
+      }
+    });
+  } catch (error) {
+    console.error("Error getting stats:", error);
+    sendError(res, 500, "Failed to get stats");
   }
-  res.json(adminStats);
 });
 
 // Reddit Avatar Preview Endpoint
@@ -2622,77 +2678,6 @@ app.get("/api/admin/payment-requests", verifyFirebaseToken, async (req, res) => 
   }
 });
 
-// Admin: Get analytics stats
-app.get("/api/admin/stats", verifyFirebaseToken, async (req, res) => {
-  try {
-    const adminEmail = req.user.email;
-    if (!(await isAdminEmail(adminEmail))) {
-      return sendError(res, 403, "Only admin can view stats");
-    }
-
-    // Users count from Firebase Auth
-    let totalUsers = 0;
-    try {
-      const listResult = await admin.auth().listUsers(1000);
-      totalUsers = listResult.users.length;
-    } catch (e) {
-      console.error("Error counting users:", e);
-    }
-
-    // Courses count
-    const totalCourses = courseStorage.length;
-
-    // Total access grants
-    let totalAccessGrants = 0;
-    for (const [, courses] of userCourseAccess) {
-      totalAccessGrants += courses.size;
-    }
-
-    // Users with course access
-    const usersWithAccess = userCourseAccess.size;
-
-    // Recent signups (last 7 days)
-    let recentSignups = 0;
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    try {
-      const listResult = await admin.auth().listUsers(1000);
-      recentSignups = listResult.users.filter(u => {
-        const created = new Date(u.metadata.creationTime);
-        return created >= sevenDaysAgo;
-      }).length;
-    } catch (e) {
-      console.error("Error counting recent signups:", e);
-    }
-
-    // Pending payment requests
-    let pendingRequests = 0;
-    try {
-      const snapshot = await admin.firestore()
-        .collection("forum_notifications")
-        .where("type", "==", "payment_request")
-        .where("read", "==", false)
-        .get();
-      pendingRequests = snapshot.size;
-    } catch (e) {
-      console.error("Error counting pending requests:", e);
-    }
-
-    res.json({
-      success: true,
-      stats: {
-        totalUsers,
-        totalCourses,
-        totalAccessGrants,
-        usersWithAccess,
-        recentSignups,
-        pendingRequests,
-      }
-    });
-  } catch (error) {
-    console.error("Error getting stats:", error);
-    sendError(res, 500, "Failed to get stats");
-  }
-});
 
 app.use((req, res, next) => {
   console.log("Unmatched request:", req.method, req.path);
