@@ -144,7 +144,9 @@ const FreePdfPage = () => {
                             
                             {/* Insert Kit Link Here */}
                             <a 
-                              href="#" 
+                              href="https://drive.google.com/file/d/1ZwsJ69wPzDKFqCYbYpcuSaU9yh_LgJhl/view?usp=sharing" 
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="btn-neo bg-black text-white hover:bg-neo-main hover:text-black border-4 border-black text-xl sm:text-2xl py-4 sm:py-5 px-8 text-center transition-all shadow-[6px_6px_0_0_#fbd38d] hover:shadow-[2px_2px_0_0_#fbd38d] hover:translate-x-1 hover:translate-y-1 block w-full max-w-md mx-auto lg:mx-0 group"
                             >
                                 <span className="flex items-center justify-center gap-3">

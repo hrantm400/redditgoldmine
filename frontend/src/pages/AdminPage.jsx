@@ -16,6 +16,14 @@ const AdminPage = () => {
   const [grantCourseId, setGrantCourseId] = useState("");
   const [grantStatus, setGrantStatus] = useState("");
   
+  // Analytics states
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+  
+  // Payment requests states
+  const [paymentRequests, setPaymentRequests] = useState([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+  
   // Course management states
   const [courseName, setCourseName] = useState("");
   const [coursePrice, setCoursePrice] = useState("");
@@ -113,6 +121,44 @@ const AdminPage = () => {
     }
   };
 
+  const loadStats = async () => {
+    try {
+      setStatsLoading(true);
+      const token = await getIdToken();
+      if (!token) return;
+      const res = await fetch(`${API_URL}/api/admin/stats`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data.stats);
+      }
+    } catch (error) {
+      console.error("Error loading stats:", error);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
+  const loadPaymentRequests = async () => {
+    try {
+      setRequestsLoading(true);
+      const token = await getIdToken();
+      if (!token) return;
+      const res = await fetch(`${API_URL}/api/admin/payment-requests`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPaymentRequests(data.requests || []);
+      }
+    } catch (error) {
+      console.error("Error loading payment requests:", error);
+    } finally {
+      setRequestsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isAdmin) {
       console.log("Not admin, skipping data load");
@@ -134,6 +180,12 @@ const AdminPage = () => {
 
         // Load all registered users from Firebase
         await loadUsers();
+        
+        // Load stats
+        await loadStats();
+        
+        // Load payment requests
+        await loadPaymentRequests();
       } catch (error) {
         console.error("Error loading admin data:", error);
         setUsers([]);
@@ -496,27 +548,41 @@ const AdminPage = () => {
             Admin <span className="text-outline">Panel</span>
           </h1>
 
-          <div className="flex gap-4 mb-8">
+          <div className="flex flex-wrap gap-3 mb-8">
             <button
               type="button"
-              className={activeTab === "courses" ? "btn-neo-main text-xl" : "btn-neo-black text-xl"}
+              className={activeTab === "analytics" ? "btn-neo-main text-lg" : "btn-neo-black text-lg"}
+              onClick={() => { setActiveTab("analytics"); loadStats(); }}
+            >
+              📊 Analytics
+            </button>
+            <button
+              type="button"
+              className={activeTab === "payments" ? "btn-neo-main text-lg" : "btn-neo-black text-lg"}
+              onClick={() => { setActiveTab("payments"); loadPaymentRequests(); }}
+            >
+              💰 Payment Requests
+            </button>
+            <button
+              type="button"
+              className={activeTab === "courses" ? "btn-neo-main text-lg" : "btn-neo-black text-lg"}
               onClick={() => setActiveTab("courses")}
             >
-              Manage Courses
+              📚 Courses
             </button>
             <button
               type="button"
-              className={activeTab === "users" ? "btn-neo-main text-xl" : "btn-neo-black text-xl"}
+              className={activeTab === "users" ? "btn-neo-main text-lg" : "btn-neo-black text-lg"}
               onClick={() => setActiveTab("users")}
             >
-              Manage Users
+              👥 Users
             </button>
             <button
               type="button"
-              className={activeTab === "forum" ? "btn-neo-main text-xl" : "btn-neo-black text-xl"}
+              className={activeTab === "forum" ? "btn-neo-main text-lg" : "btn-neo-black text-lg"}
               onClick={() => setActiveTab("forum")}
             >
-              Forum Management
+              💬 Forum
             </button>
           </div>
 
@@ -838,6 +904,101 @@ const AdminPage = () => {
               )}
 
               {activeTab === "forum" && <ForumManagement />}
+
+              {activeTab === "analytics" && (
+                <div>
+                  <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-3xl font-display font-bold text-neo-black">📊 Site Analytics</h2>
+                    <button onClick={loadStats} className="btn-neo text-sm">🔄 Refresh</button>
+                  </div>
+                  {statsLoading ? (
+                    <div className="card-neo text-center py-8">
+                      <p className="text-gray-600 text-lg">Loading stats...</p>
+                    </div>
+                  ) : stats ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+                      <div className="card-neo text-center">
+                        <div className="text-5xl font-heavy text-neo-main">{stats.totalUsers}</div>
+                        <div className="text-lg font-bold text-neo-black mt-2">Total Users</div>
+                      </div>
+                      <div className="card-neo text-center">
+                        <div className="text-5xl font-heavy text-neo-main">{stats.recentSignups}</div>
+                        <div className="text-lg font-bold text-neo-black mt-2">Signups (7 days)</div>
+                      </div>
+                      <div className="card-neo text-center">
+                        <div className="text-5xl font-heavy text-neo-main">{stats.totalCourses}</div>
+                        <div className="text-lg font-bold text-neo-black mt-2">Total Courses</div>
+                      </div>
+                      <div className="card-neo text-center">
+                        <div className="text-5xl font-heavy text-neo-main">{stats.usersWithAccess}</div>
+                        <div className="text-lg font-bold text-neo-black mt-2">Users with Access</div>
+                      </div>
+                      <div className="card-neo text-center">
+                        <div className="text-5xl font-heavy text-neo-main">{stats.totalAccessGrants}</div>
+                        <div className="text-lg font-bold text-neo-black mt-2">Total Access Grants</div>
+                      </div>
+                      <div className="card-neo text-center border-neo-main">
+                        <div className="text-5xl font-heavy text-red-600 animate-pulse">{stats.pendingRequests}</div>
+                        <div className="text-lg font-bold text-neo-black mt-2">Pending Payments</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="card-neo text-center py-8">
+                      <p className="text-gray-600">Could not load stats. Click Refresh.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "payments" && (
+                <div>
+                  <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-3xl font-display font-bold text-neo-black">💰 Payment Access Requests</h2>
+                    <button onClick={loadPaymentRequests} className="btn-neo text-sm">🔄 Refresh</button>
+                  </div>
+                  {requestsLoading ? (
+                    <div className="card-neo text-center py-8">
+                      <p className="text-gray-600 text-lg">Loading requests...</p>
+                    </div>
+                  ) : paymentRequests.length === 0 ? (
+                    <div className="card-neo text-center py-8">
+                      <p className="text-gray-600 text-lg">No payment requests yet. They will appear here when users click "I already paid – request access".</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {paymentRequests.map((req) => (
+                        <div key={req.id} className={`card-neo flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center ${!req.read ? 'border-neo-main border-4' : ''}`}>
+                          <div className="flex-grow">
+                            <div className="flex items-center gap-2 mb-1">
+                              {!req.read && <span className="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse" />}
+                              <span className="font-heavy text-lg">{req.title || 'Payment Request'}</span>
+                            </div>
+                            <p className="text-gray-700 text-sm">{req.message}</p>
+                            <p className="text-gray-500 text-xs mt-1">
+                              {req.createdAt ? new Date(req.createdAt).toLocaleString() : 'Unknown date'}
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0 flex gap-2">
+                            <button
+                              className="btn-neo-main py-2 px-4 text-sm"
+                              onClick={() => {
+                                // Extract email from the message
+                                const match = req.message?.match(/User\s+(\S+@\S+)/);
+                                if (match) {
+                                  setGrantEmail(match[1]);
+                                  setActiveTab('users');
+                                }
+                              }}
+                            >
+                              Grant Access
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
         </div>
       </main>
 

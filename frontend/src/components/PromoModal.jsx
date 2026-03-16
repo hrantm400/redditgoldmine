@@ -55,7 +55,11 @@ const PromoModal = () => {
       const now = Date.now();
 
       if (currentStage >= schedule.length) {
-        return; // All scheduled popups have been shown
+        // Reset the cycle — start over from stage 0
+        localStorage.setItem("promo_stage", "0");
+        localStorage.removeItem("promo_next_show");
+        currentStage = 0;
+        nextShowTime = 0;
       }
 
       if (currentStage === 0) {
