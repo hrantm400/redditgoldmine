@@ -1267,9 +1267,8 @@ app.get("/api/admin/stats", verifyFirebaseToken, async (req, res) => {
       const snapshot = await admin.firestore()
         .collection("forum_notifications")
         .where("type", "==", "payment_request")
-        .where("read", "==", false)
         .get();
-      pendingRequests = snapshot.size;
+      pendingRequests = snapshot.docs.filter(doc => doc.data().read === false).length;
     } catch (e) {
       console.error("Error counting pending requests:", e);
     }
@@ -2661,15 +2660,19 @@ app.get("/api/admin/payment-requests", verifyFirebaseToken, async (req, res) => 
     const snapshot = await admin.firestore()
       .collection("forum_notifications")
       .where("type", "==", "payment_request")
-      .orderBy("createdAt", "desc")
-      .limit(100)
       .get();
 
-    const requests = snapshot.docs.map(doc => ({
+    let requests = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate?.() || doc.data().createdAt,
     }));
+    
+    // Sort in memory to avoid Firestore composite index requirement
+    requests.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    
+    // Limit to 100
+    requests = requests.slice(0, 100);
 
     res.json({ success: true, requests });
   } catch (error) {
